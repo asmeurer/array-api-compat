@@ -16,8 +16,10 @@ linalg_all = [i for i in dir(torch_linalg) if not i.startswith('_')]
 from torch import outer, trace
 from ._aliases import _fix_promotion, matrix_transpose, tensordot
 
-# Note: torch.linalg.cross does not default to axis=-1 (it defaults to the
-# first axis with size 3), see https://github.com/pytorch/pytorch/issues/58743
+# Note: torch.cross does not default to axis=-1 (it defaults to the first axis
+# with size 3), see https://github.com/pytorch/pytorch/issues/58743.
+# torch.linalg.cross does not have this issue, but we still wrap here to fix
+# type promotion.
 def cross(x1: array, x2: array, /, *, axis: int = -1) -> array:
     x1, x2 = _fix_promotion(x1, x2, only_scalar=False)
     return torch_linalg.cross(x1, x2, dim=axis)
@@ -50,6 +52,6 @@ def solve(x1: array, x2: array, /, **kwargs) -> array:
     return torch.linalg.solve(x1, x2, **kwargs)
 
 __all__ = linalg_all + ['outer', 'trace', 'matrix_transpose', 'tensordot',
-                        'vecdot', 'solve']
+                        'cross', 'vecdot', 'solve']
 
 del linalg_all
